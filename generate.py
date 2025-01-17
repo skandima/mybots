@@ -1,43 +1,22 @@
 import pyrosim.pyrosim as pyrosim
 
-# Start the SDF file
-pyrosim.Start_SDF("boxes.sdf")
+def Create_World():
+    # Start the SDF file
+    pyrosim.Start_SDF("world.sdf")
+    #Add cube
+    pyrosim.Send_Cube(name="Box", pos=[-3.0,3.0,0.5] , size=[1.0,1.0,1.0])
+    # End the SDF file
+    pyrosim.End()
 
-# Initial dimensions
-initial_length = 1.0
-initial_width = 1.0
-initial_height = 1.0
+def Create_Robot():
+    pyrosim.Start_URDF("body.urdf")
+    pyrosim.Send_Cube(name="Link0", pos=[0,0,0.5] , size=[1,1,1])
+    pyrosim.Send_Joint( name = "Link0_Link1" , parent= "Link0" , child = "Link1" , type = "revolute", position = [0.5,0,1.0])
+    pyrosim.Send_Cube(name="Link1", pos=[0.5,0,0.5] , size=[1.0,1.0,1.0])
+    pyrosim.Send_Joint( name = "Link1_Link2" , parent= "Link1" , child = "Link2" , type = "revolute", position = [1,0,0.0])
+    pyrosim.Send_Cube(name="Link2", pos=[0.5,0,-0.5] , size=[1.0,1.0,1.0])
+    pyrosim.End()
 
-# Loop over columns (x-axis)
-for col in range(5):  # Iterate over 5 columns
-    x = col * initial_length  # Position along x-axis
-
-    # Loop over rows (y-axis)
-    for row in range(5):  # Iterate over 5 rows
-        y = row * initial_width  # Position along y-axis
-
-        # Reset dimensions for each column-row stack
-        length = initial_length
-        width = initial_width
-        height = initial_height
-        z = height / 2  # Start at ground level for this column-row stack
-
-        # Stack 10 cubes vertically in this column-row
-        for layer in range(10):  # 10 cubes per column-row stack
-            # Send cube to pyrosim
-            pyrosim.Send_Cube(
-                name=f"Box_C{col+1}_R{row+1}_L{layer+1}",
-                pos=[x, y, z],
-                size=[length, width, height]
-            )
-
-            # Update z for the next cube in the stack
-            z += height
-
-            # Reduce dimensions by 10% for the next cube in this stack
-            length *= 0.9
-            width *= 0.9
-            height *= 0.9
-
-# End the SDF file
-pyrosim.End()
+if __name__ == "__main__":
+    Create_World()
+    Create_Robot()
