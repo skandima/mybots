@@ -9,7 +9,8 @@ p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
 p.setGravity(0,0,-9.8) #add gravity
 planeId = p.loadURDF("plane.urdf") #add floor
-p.loadSDF("boxes.sdf")
+robotId = p.loadURDF("body.urdf") #simulate robot in body.urdf
+p.loadSDF("world.sdf")
 
 for i in range(1000):
     start_time = time.time()  # Start the timer for this iteration
