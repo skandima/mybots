@@ -3,6 +3,7 @@ import time
 import pybullet_data
 import pyrosim.pyrosim as pyrosim
 import numpy as np
+import os
 
 
 physicsClient = p.connect(p.GUI)
@@ -17,19 +18,23 @@ p.loadSDF("world.sdf")
 pyrosim.Prepare_To_Simulate(robotId)
 
 # Create a numpy vector filled with zeros
-frontLegSensorValues = np.zeros(10000)  # Assuming 10000 iterations in the loop
+frontLegSensorValues = np.zeros(100)  # Assuming 100 iterations in the loop
+torsoSensorValues = np.zeros(100)  # For the new sensor on Torso
+
 
 # Print the numpy vector and exit
 print(frontLegSensorValues)
 
 
 # Run the simulation loop
-for i in range(1000):
+for i in range(100):
     start_time = time.time()  # Start the timer for this iteration
     p.stepSimulation()  # Step the simulation
 
     # Store the touch sensor value for FrontLeg in the array
     frontLegSensorValues[i] = pyrosim.Get_Touch_Sensor_Value_For_Link("FrontLeg")
+    torsoSensorValues[i] = pyrosim.Get_Touch_Sensor_Value_For_Link("Torso")
+
 
     # Calculate and print the time elapsed for this iteration
     iteration_duration = time.time() - start_time
@@ -37,8 +42,14 @@ for i in range(1000):
 
     time.sleep(1 / 60.0)  # Sleep to control the simulation speed
 
-# Print the stored sensor values after the simulation
-print(frontLegSensorValues)
+# Ensure the data subdirectory exists
+os.makedirs("data", exist_ok=True)
+
+# Save the sensor values to separate files
+np.save("data/frontLegSensorValues.npy", frontLegSensorValues)
+np.save("data/torsoSensorValues.npy", torsoSensorValues)
+
+print("Sensor values saved to data directory.")
 
 
 
